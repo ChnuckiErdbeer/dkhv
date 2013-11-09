@@ -1,0 +1,23 @@
+To create a tileset:
+
+create a 256 x 255 x 256 png containig the tileset.
+
+Render it in wingrit to binary to get your pal and img file. 
+Even as you will throw it awy later, build a map an check of all 
+map reduction! (And delete the map afterwards). If you don't do this
+grit will optimize your tileset resulting in some garbled tiles in
+the game.
+
+Rename the files to yourfile_pal.bin and yourfile_tiles.bin
+
+
+Open Tiled.
+
+Create a new project. (Map format: csv!!)
+
+Load the before mentioned png file as tileset.
+
+Build your map using up to 4 layers. (Additional layers can be processed
+									  but NDS can only use up to four)
+									  
+Use tmx2bin to convert tiled map to nds binary format.									  

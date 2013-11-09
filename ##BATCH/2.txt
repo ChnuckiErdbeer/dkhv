@@ -1,0 +1,3 @@
+sieben_map0.bin
+sieben_pal.bin
+sieben_tiles.bin

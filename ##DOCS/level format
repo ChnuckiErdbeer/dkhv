@@ -1,0 +1,107 @@
+Level Format:
+
+A level is a composition of (up to?) 32x32 maps (consisting of 32x32 
+tiles). Levels are stored as binary files with the following structure:
+
+
+Header:
+
+	The header is structured as follows:
+	
+	0x0000 0000	headersize            (1 byte)
+	0x0000 0001 number of entrypoints (1 byte)
+	0x0000 0002 entrypointlist (epl)
+	
+		epl entry (4 byte):
+	
+		Bits  0- 9 of epl: 	map position
+		Bits 10-19 of epl: 	tile position
+		Bits 20-23 of epl: 	entry direction 
+							(l = bit 0, r = bit 1, u = bit 2, f = bit 3)
+		Bits 24-32 of epl:	RESERVED 
+	
+	
+				
+
+Data:
+
+	The data block is an array of 32x32 words (2 bytes).
+	Each word is layed out as follows:
+	
+	
+	word(x,y): 15 15 13 12 11 10 09 08 07 06 05 04 03 02 01 00
+
+	Bit 15:		1 = Level has a map at position (x,y).
+				0 = At position (x,y) is an exit to another level.
+			
+				Bit 15 (or the sign bit if looked at our word as a s16
+				variable) decides whether a map is loaded at position
+				(x,y) or if the position is an exit leading to another 
+				level. 
+				
+				If bit 15 is 1, the corresponding
+				map_x_y.bin file will be loaded to position (x,y).
+				
+				If the position is an level exit another level will be
+				loaded when the player steps on a metatile in the map. 
+				Notice that a map for the position will still be loaded 
+				unless we're dealing with an exit to level 0. 
+				(explained later)
+				
+				If bit 15 is not set bits 0 - 14 will contain the number
+				of the level to switch to. This gives us a possibilty
+				of up to 32767 levels in the game, wich should be quite
+				enough!
+				
+				To be precisely you can't use 32767 but only 32766 
+				levels in the game. This is because level 0 is not used 
+				in the game. Level numbering starts at level 1.
+				
+				So if word(x,y) is = 0 (which could be interpreted as
+				an exit to level 0) it means, that this map is not part 
+				of the level. The standart map word(0,0) is loaded
+				at this position.
+				
+				Notice that you can still use word(0,0) in your level.
+				But yet it wouldn't be dumb to reseve it containing
+				wheter a flashy design so you can spot map parts that
+				shouldn't be seen by the player or you can use it as 
+				your standart map. A standart map should be infintely
+				repeatble and can be used as a backdrop, stretching out 
+				to infinity.
+				
+			Bits 0-14 RESERVED!
+				
+				
+				
+				
+
+Ich brauche ein map format:
+
+64 * 64 ndsmaps
+
+Es reicht zu zeigen ob da oder nicht.
+
+63 * 63 = 3969bit = 496 byte.
+
+Da das aber mal betont klein ist werde ich pro dsmap zwei ganze byte
+reservieren. Wer weis wofür man die übrigen 15 bit noch brauchen kann.
+Also:
+
+
+Wir haben ein Array von 64x64 dsmaps mit zwei Byte pro eintrag.
+Davor kommet ein header.
+
+Ein level muss ein und ausgänge zu anderen leveln haben.
+Diese wären realisierbar als besondere dsmaps.
+
+Problem: Wenn ich einen haufen levels verwenden will wird es schwer den 
+Wert des nächsten levels in die 7 byte zu quetschen.
+
+Würde ich die nur dafür verwenden hätten wir 127 mögliche levels.
+
+
+
+Was könnte der Enthalten?
+
+- Startpunkt

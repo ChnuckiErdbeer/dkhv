@@ -1,0 +1,10 @@
+also ich will:
+
+- Das er langsamer wird wenn er näher an das ziel kommt.
+
+	Kann ich machen indem ich speed bis maxspeed erhöhe wenn 
+	distanz > maxspeed und verringere wenn distanz < maxspeed.
+
+- Das er auf neue richtungsanweisungen verzögert reagiert.
+
+	Kann ich machen indem ich 

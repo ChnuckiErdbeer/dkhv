@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="dsgame" />
+		<Option makefile_is_custom="1" />
+		<Option pch_mode="2" />
+		<Option compiler="devkitpro_arm_compiler" />
+		<MakeCommands>
+			<Build command="$make -f $makefile" />
+			<CompileFile command="$make -f $makefile " />
+			<Clean command="$make -f $makefile clean" />
+			<DistClean command="$make -f $makefile distclean$target" />
+			<AskRebuildNeeded command="$make -q -f $makefile " />
+			<SilentBuild command="$make -f $makefile &gt; $(CMD_NULL)" />
+		</MakeCommands>
+		<Build>
+			<Target title="Debug">
+				<Option output="dsgame" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug/" />
+				<Option type="1" />
+				<Option compiler="devkitpro_arm_compiler" />
+				<Compiler>
+					<Add option="-g" />
+				</Compiler>
+				<MakeCommands>
+					<Build command="$make -f $makefile" />
+					<CompileFile command="$make -f $makefile" />
+					<Clean command="$make -f $makefile clean" />
+					<DistClean command="$make -f $makefile distclean$target" />
+					<AskRebuildNeeded command="$make -q -f $makefile " />
+					<SilentBuild command="$make -f $makefile &gt; $(CMD_NULL)" />
+				</MakeCommands>
+			</Target>
+			<Target title="Release">
+				<Option output="bin/Release/dsgame" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release/" />
+				<Option type="1" />
+				<Option compiler="devkitpro_arm_compiler" />
+				<Compiler>
+					<Add option="-O2" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+				<MakeCommands>
+					<Build command="$make -f $makefile " />
+					<CompileFile command="$make -f $makefile " />
+					<Clean command="$make -f $makefile clean" />
+					<DistClean command="$make -f $makefile distclean$target" />
+					<AskRebuildNeeded command="$make -q -f $makefile " />
+					<SilentBuild command="$make -f $makefile  &gt; $(CMD_NULL)" />
+				</MakeCommands>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+		</Compiler>
+		<Unit filename="##LEVELS/##TILESETS/test.png" />
+		<Unit filename="##LEVELS/##TILESETS/test2.png" />
+		<Unit filename="##LEVELS/gnade/gnade.h" />
+		<Unit filename="##LEVELS/gnade/gnade.png" />
+		<Unit filename="##LEVELS/gnade/gnade.tmx" />
+		<Unit filename="##LEVELS/gnade/gnade_map0.bin" />
+		<Unit filename="##LEVELS/gnade/gnade_pal.bin" />
+		<Unit filename="##LEVELS/gnade/gnade_tiles.bin" />
+		<Unit filename="##LEVELS/test/test.h" />
+		<Unit filename="##LEVELS/test/test.png" />
+		<Unit filename="##LEVELS/test/test.tmx" />
+		<Unit filename="##LEVELS/test/test_map0.bin" />
+		<Unit filename="##LEVELS/test/test_pal.bin" />
+		<Unit filename="##LEVELS/test/test_tiles.bin" />
+		<Unit filename="##LEVELS/tost/tost.h" />
+		<Unit filename="##LEVELS/tost/tost.png" />
+		<Unit filename="##LEVELS/tost/tost.tmx" />
+		<Unit filename="##LEVELS/tost/tost_map0.bin" />
+		<Unit filename="##LEVELS/tost/tost_pal.bin" />
+		<Unit filename="##LEVELS/tost/tost_tiles.bin" />
+		<Unit filename="Makefile" />
+		<Unit filename="source/main.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Extensions>
+			<code_completion />
+			<envvars />
+			<debugger />
+			<lib_finder disable_auto="1" />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

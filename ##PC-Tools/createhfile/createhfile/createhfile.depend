@@ -1,0 +1,5 @@
+# depslib dependency file v1.0
+1383875428 source:c:\devkitpro\##projects\dsgame\##pc-tools\createhfile\createhfile\main.c
+	<stdio.h>
+	<stdlib.h>
+

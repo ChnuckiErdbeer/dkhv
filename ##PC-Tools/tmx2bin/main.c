@@ -2,8 +2,17 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include <stdbool.h>
 
 #define mapname argv[1]
+
+#define TILEOFFS(x,y) (2 * x * y)
+
+typedef unsigned short  tile_t;
+
+
+
+
 
 
 void        error(int id);
@@ -12,7 +21,9 @@ int         stringToInt(char *mystring);
 int         getNumberFromFile(char *filename,int offset);
 int         getStringLen(char *filename,int offset);
 const char *getQStringFromFile(char *filename, int offset);
-void writeLayerToFile(char *layerName, char *tmxfilename, char *outputfilename, int offset,int width, int height);
+void        getMapFilename(char *returnstring,char *outpufilename,char *layername,int x, int y);
+void        writeLayerToFile(char *layerName, char *tmxfilename, char *outputfilename, int offset,int width, int height);
+
 
 void error(int id){
 
@@ -54,6 +65,9 @@ void error(int id){
                     break;
 
         case 111:   printf("Error %i: Func: writeLayerToFile: Tilenumber is negative.\n",id);
+                    break;
+
+        case 112:   printf("Error %i: Func: writeLayerToFile: Couldnt write binary file.\n",id);
                     break;
 
         default:    printf("ERROR OF ERRORS!! Undefined Errocode: %i\n",id);
@@ -151,7 +165,9 @@ int getNumberFromFile(char *filename,int offset)
 
     FILE *file;
     file = fopen(filename,"rb");
-    if (ferror(file) != 0) error(1);
+    if (file == 0) error(1);
+
+
 
     fseek(file,offset,SEEK_SET);
 
@@ -236,42 +252,90 @@ const char *getQStringFromFile(char *filename, int offset)
     fclose(file);
 }
 
+
+void getMapFilename(char *returnstring,char *outputfilename,char *layername,int x, int y)
+{
+    char *xs;
+    char *ys;
+
+    xs = malloc(8);       //String for x-position.
+    ys = malloc(8);       //String for y-position.
+
+
+    itoa(x,xs,10);              //Set xs to current maps x position.
+    itoa(y,ys,10);              //Set ys to current maps y position.
+
+    //Set output filename in format: "outputfilename_layername_(x,y).bin"
+
+    strcpy(returnstring,outputfilename);
+    strcat(returnstring,"_");
+    strcat(returnstring,layername);
+    strcat(returnstring,"_(");
+    strcat(returnstring,xs);
+    strcat(returnstring,",");
+    strcat(returnstring,ys);
+    strcat(returnstring,").bin");
+
+    free (xs);
+    free (ys);
+}
+
 void writeLayerToFile(char *layerName, char *tmxfilename, char *outputfilename, int offset,int width, int height)
 {
 
-    FILE *output;
-    output = fopen(outputfilename,"wb");
-    if(ferror(output)!=0) error(2);
 
-    int  temp;
+    FILE *output;
+
     int  i = 0;
     int  j = 0;
+
+    i = width >> 5;
+    j = height >> 5;
+
+    char *filename;
+
+
+    tile_t *current_level;
+
+    current_level = malloc(32*32*32*32); //32 x 32 maps with 32 x 32 tiles.
+
+
+    filename = malloc(256);     //String for filename of current file.
+
+
+    i = 0;
+    j = 0;
 
 
     while (j < height)          //Line
     {
+
+        int filechange = 0;
+
         while (i < (width))     //Row
         {
-            temp = getNumberFromFile(tmxfilename,offset);
-            if (fwrite(&temp,2,1,output) != 1) error(3);
 
+
+
+
+            current_level[(i >> 5) * (j >> 5) + (i % 32) * (j % 32)] = getNumberFromFile(tmxfilename,offset);
 
 
             //Step behind the numbers:
 
-            if (temp >= 0)
+            if (current_level[(i >> 5) * (j >> 5) + (i % 32) * (j % 32)] >= 0)
             {
                 offset++;
-                if (temp > 9)
+                if (current_level[(i >> 5) * (j >> 5) + (i % 32) * (j % 32)] > 9)
                 {
                     offset++;
-                    if (temp > 99)
+                    if (current_level[(i >> 5) * (j >> 5) + (i % 32) * (j % 32)] > 99)
                     {
-                        offset++;
-                        if (temp > 999)
+                        current_level[(i >> 5) * (j >> 5) + (i % 32) * (j % 32)]++;
+                        if (current_level[(i >> 5) * (j >> 5) + (i % 32) * (j % 32)] > 999)
                         {
-                            offset++;
-                            if (temp > 1024) error(110);
+                            current_level[(i >> 5) * (j >> 5) + (i % 32) * (j % 32)]++;
+                            if (current_level[(i >> 5) * (j >> 5) + (i % 32) * (j % 32)] > 1024) error(110);
                         }
 
                     }
@@ -283,18 +347,78 @@ void writeLayerToFile(char *layerName, char *tmxfilename, char *outputfilename, 
 
             i++;
         }
+
         printf("|");
         offset++; //Skip the newline char.
+
         j++;
+        filechange = 0;
         i=0;
+    }
+
+        printf("[SUCCESS!]\n");
+
+
+
+     //Create the binary files:
+
+    for (i = 0; i < (width >> 5);i++)           //width  / 32 = number of map rows
+    {
+        for (j = 0; j < (height >> 5); j++)     //heigth / 32 = number of map lines
+        {
+
+            bool  mapempty = true;
+
+            int x,y;
+
+            for (x = 0; x < 32; x++)
+            {
+                for (y = 0; y < 32; y++)
+                {
+                    if (current_level[(i) * (j) + (x) * (y)] != 0)
+                    mapempty = false;
+
+                }
+            }
+
+            if (mapempty == false)
+            {
+
+                //ggg files are garbled.
+                getMapFilename(filename,outputfilename,layerName,i,j);
+                output = fopen(filename,"wb");
+                if(output == 0) error(112);
+
+
+
+                fwrite(&current_level[(i) * (j)],sizeof (tile_t),(32*32),output);
+
+                //CONSIDER ADDING ONE ADDITIONAL EMPTY TILE
+
+                fclose(output);
+
+
+
+
+            }
+
+
+
+
+
         }
-
-        i = 0;
-        fwrite(&i,2,1,output); //One additional empty tile.
+    }
 
 
-    fclose(output);
+        free (filename);
+        free (current_level);
+
+
+
+
+
 }
+
 
 
 int main(int argc, char *argv[])
@@ -396,7 +520,7 @@ int main(int argc, char *argv[])
         offset += strlen("csv\">\n");
 
         printf("\nConverting layer number %i named: \"%s\".\n",layercount - 1,currentLayerName);
-        writeLayerToFile(currentLayerName, tmxname, strcat(strcat(strcat(mapname,"_"),currentLayerName),".bin"), offset, width, height);
+        writeLayerToFile(currentLayerName, tmxname, mapname, offset, width, height);
         printf(" [SUCCESS!]\n\n");
     }
 

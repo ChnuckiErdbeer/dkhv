@@ -4,9 +4,10 @@
 	<stdlib.h>
 	<string.h>
 
-1383950589 source:c:\devkitpro\##projects\dsgame\##pc-tools\tmx2bin\main.c
+1384027672 source:c:\devkitpro\##projects\dsgame\##pc-tools\tmx2bin\main.c
 	<stdio.h>
 	<stdlib.h>
 	<string.h>
 	<ctype.h>
+	<stdbool.h>
 

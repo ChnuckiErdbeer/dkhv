@@ -41,7 +41,14 @@ int main()
 
     VRAM_A_CR = VRAM_ENABLE | VRAM_A_MAIN_BG;
 
-    //ed_startEditor();
+    char *test = "test";
+
+    exit(0);
+
+   // #define LEVELNAME("
+
+
+    //u16 level_width =
 
     //Copy tiles, map and palette to VRAM:
 

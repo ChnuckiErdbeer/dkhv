@@ -1,10 +1,5 @@
 # depslib dependency file v1.0
-1383194613 source:g:\in arbeit\programming\tools\echoparameters\tmx2bin\main.c
-	<stdio.h>
-	<stdlib.h>
-	<string.h>
-
-1384027672 source:c:\devkitpro\##projects\dsgame\##pc-tools\tmx2bin\main.c
+1384143677 source:c:\devkitpro\##projects\dsgame\##pc-tools\tmx2bin\main.c
 	<stdio.h>
 	<stdlib.h>
 	<string.h>

@@ -23,6 +23,7 @@ int         getStringLen(char *filename,int offset);
 const char *getQStringFromFile(char *filename, int offset);
 void        getMapFilename(char *returnstring,char *outpufilename,char *layername,int x, int y);
 void        writeLayerToFile(char *layerName, char *tmxfilename, char *outputfilename, int offset,int width, int height);
+int         maxof(int x, int y);
 
 
 void error(int id){
@@ -68,6 +69,12 @@ void error(int id){
                     break;
 
         case 112:   printf("Error %i: Func: writeLayerToFile: Couldnt write binary file.\n",id);
+                    break;
+
+        case 113:   printf("Error %i: Func: writeLayerToFile: Couldnt create level file.\n",id);
+                    break;
+
+        case 114:   printf("Error %i: Func: writeLayerToFile: Couldnt access level file.\n",id);
                     break;
 
         default:    printf("ERROR OF ERRORS!! Undefined Errocode: %i\n",id);
@@ -262,7 +269,7 @@ void getMapFilename(char *returnstring,char *outputfilename,char *layername,int 
     ys = malloc(8);       //String for y-position.
 
 
-    itoa(x,xs,10);              //Set xs to current maps x position.
+    itoa(x,xs,10);              //Set xs to current maps x position in the levels map raster.
     itoa(y,ys,10);              //Set ys to current maps y position.
 
     //Set output filename in format: "outputfilename_layername_(x,y).bin"
@@ -270,7 +277,7 @@ void getMapFilename(char *returnstring,char *outputfilename,char *layername,int 
     strcpy(returnstring,outputfilename);
     strcat(returnstring,"_");
     strcat(returnstring,layername);
-    strcat(returnstring,"_(");
+    strcat(returnstring,"_");
     strcat(returnstring,xs);
     strcat(returnstring,",");
     strcat(returnstring,ys);
@@ -280,11 +287,14 @@ void getMapFilename(char *returnstring,char *outputfilename,char *layername,int 
     free (ys);
 }
 
+int maxof(int x, int y)
+{
+    if (x > y) return x;
+    else return y;
+}
+
 void writeLayerToFile(char *layerName, char *tmxfilename, char *outputfilename, int offset,int width, int height)
 {
-
-
-    FILE *output;
 
     int  i = 0;
     int  j = 0;
@@ -297,7 +307,8 @@ void writeLayerToFile(char *layerName, char *tmxfilename, char *outputfilename, 
 
     tile_t *current_level;
 
-    current_level = malloc(32*32*32*32); //32 x 32 maps with 32 x 32 tiles.
+    int tiles_in_level = (width >> 5) * (height >> 5) * 32 * 32;    //(widht / 32) x (heigth / 32) maps with each 32 x 32 tiles.
+    current_level = malloc(tiles_in_level * sizeof(short));
 
 
     filename = malloc(256);     //String for filename of current file.
@@ -307,38 +318,68 @@ void writeLayerToFile(char *layerName, char *tmxfilename, char *outputfilename, 
     j = 0;
 
 
-    while (j < height)          //Line
+    //Read interleaved map file into planar ram-segment current_level:
+
+    printf("\n Read all submaps from layer:\n");
+
+    while (j < height)          //Step through the lines in interleaved tmx
     {
 
         int filechange = 0;
 
-        while (i < (width))     //Row
+        while (i < (width))     //Setp through the rows in interleaved tmx
         {
 
 
+            unsigned short tempi;
 
 
-            current_level[(i >> 5) * (j >> 5) + (i % 32) * (j % 32)] = getNumberFromFile(tmxfilename,offset);
+            //Now we step throug each tile in a line, and every 32 tiles append them to another corresponding ram segment.
+            //
+            //A simplified example where maps have 2x2 instead of 32x32 tiles:
+            //
+            //  tmx:            11223344        ram:            11112222
+            //  (interleaved)   11223344        (planar)        33334444
+            //                  55667788                        55556666
+            //                  55667788                        77778888
+            //
+            //As you can see, while in the tmx file the data four our binary output files appears in a nested (interleaved)
+            //form when stepping throug the entries one by one (11223344112233445566778855667788), in our ram-segment the
+            //maps are stored sequentially (planar) (111122223333444445555666677778888). This way we can easily write our
+            //map with only one call to fwrite for each file.
+            //
+            //We step tile per tile through all the map defining lines of our tmx file
+            //And write the value of each tile to the according position in our memory segment.
 
 
-            //Step behind the numbers:
+            #define MAP_POS_IN_RAM(x,y)  ((x / 32) % (width >> 5) + (y / 32) * (width >> 5)) * 1024
+            #define TILE_POS_IN_MAP(x,y)  (x % 32) + (32 * (y % 32))
+            #define TILENR(x,y) (MAP_POS_IN_RAM(x,y)+TILE_POS_IN_MAP(x,y))
 
-            if (current_level[(i >> 5) * (j >> 5) + (i % 32) * (j % 32)] >= 0)
-            {
-                offset++;
-                if (current_level[(i >> 5) * (j >> 5) + (i % 32) * (j % 32)] > 9)
-                {
-                    offset++;
-                    if (current_level[(i >> 5) * (j >> 5) + (i % 32) * (j % 32)] > 99)
-                    {
-                        current_level[(i >> 5) * (j >> 5) + (i % 32) * (j % 32)]++;
-                        if (current_level[(i >> 5) * (j >> 5) + (i % 32) * (j % 32)] > 999)
-                        {
-                            current_level[(i >> 5) * (j >> 5) + (i % 32) * (j % 32)]++;
-                            if (current_level[(i >> 5) * (j >> 5) + (i % 32) * (j % 32)] > 1024) error(110);
-                        }
 
-                    }
+
+            current_level[TILENR(i,j)] = getNumberFromFile(tmxfilename,offset);
+
+
+              //Step behind the numbers:
+
+             if (current_level[TILENR(i,j)] >= 0)
+             {
+                 offset++;
+                 if (current_level[TILENR(i,j)] > 9)
+                 {
+                      offset++;
+                     if (current_level[TILENR(i,j)] > 99)
+                     {
+                         offset++;
+                         if (current_level[TILENR(i,j)] > 999)
+                         {
+                             offset++;
+                             if (current_level[TILENR(i,j)] > 1024) error(110);
+                         }
+
+                     }
+
                 }
             } else error(111);
 
@@ -359,64 +400,137 @@ void writeLayerToFile(char *layerName, char *tmxfilename, char *outputfilename, 
         printf("[SUCCESS!]\n");
 
 
+    printf("\nCREATE FILES: \n\n");
 
-     //Create the binary files:
 
-    for (i = 0; i < (width >> 5);i++)           //width  / 32 = number of map rows
+    //Create the binary files:
+
+    printf("Create level-file:");
+    FILE *output;
+    FILE *levelfile;
+
+    strcpy(filename,outputfilename);
+    strcat(filename,"_level.bin");
+    levelfile = fopen(filename,"wb");   //Create empty levelfile.
+    if (levelfile == 0) error(113);
+
+    printf(" [DONE]\n");
+
+    //Write level header:
+
+    printf("Write level-file-header with standart settings:");
+
     {
-        for (j = 0; j < (height >> 5); j++)     //heigth / 32 = number of map lines
+        unsigned int temp = width >> 5;
+        fwrite(&temp,2,1,levelfile);
+
+        temp = height >> 5;
+        fwrite(&temp,2,1,levelfile);
+    }
+
+    fclose(levelfile);
+
+    printf("[DONE]\n\n");
+
+    printf("Create map-files and write map raster to level file:\n\n");
+
+    bool mapisempty = true;
+    int actual_width = 0;
+    int actual_height = 0;
+
+
+
+    for (i = 0; i < (tiles_in_level);i++)                                   //Step tile per tile through memory-segment.
+    {
+         if (current_level[i] != 0) mapisempty = false;                     //Set mapisempty to false whenever a tile is found that is not = 0.
+
+        if ((i % 1024) == 1023)                                             //Whenever we reach the last tile of a map:
         {
 
-            bool  mapempty = true;
 
-            int x,y;
-
-            for (x = 0; x < 32; x++)
+            if (mapisempty == false)                                        //Check if the map wasn't empty.
             {
-                for (y = 0; y < 32; y++)
-                {
-                    if (current_level[(i) * (j) + (x) * (y)] != 0)
-                    mapempty = false;
+                getMapFilename(filename,outputfilename,layerName,((i - 1023) / (width << 5)),(((i - 1023) >> 10) % (width >> 5)));
 
-                }
-            }
+                if ((i+1) % (width * 32) == 0) printf("[]\n");
+                else printf("[]");
 
-            if (mapempty == false)
-            {
 
-                //ggg files are garbled.
-                getMapFilename(filename,outputfilename,layerName,i,j);
                 output = fopen(filename,"wb");
-                if(output == 0) error(112);
+                if (output == 0) error(112);
 
-
-
-                fwrite(&current_level[(i) * (j)],sizeof (tile_t),(32*32),output);
-
-                //CONSIDER ADDING ONE ADDITIONAL EMPTY TILE
+                fwrite(&(current_level[i - (1023)]),1024 * 2,1,output);
 
                 fclose(output);
 
 
 
 
+                strcpy(filename,outputfilename);
+                strcat(filename,"_level.bin");
+                levelfile = fopen(filename,"ab");
+                if (levelfile == 0) error(114);
+
+                short temp = 0b1000000000000000;
+                fwrite(&temp,2,1,levelfile);
+
+
+                fclose(levelfile);
+
+                actual_width = maxof(actual_width,(((i - 1023) >> 10) % (width >> 5)));
+                actual_height = maxof(actual_height,((i - 1023) / (width << 5)));
+
+                mapisempty = true;
             }
 
+            else
+            {
+
+                if ((i+1) % (width * 32) == 0) printf("::\n");
+                else printf("::");
+                getMapFilename(filename,outputfilename,layerName,((i - 1023) / (width << 5)),(((i - 1023) >> 10) % (width >> 5)));
 
 
 
 
+                strcpy(filename,outputfilename);
+                strcat(filename,"_level.bin");
+                levelfile = fopen(filename,"ab");
+
+                if (levelfile == 0) error(114);
+
+                short temp = 0;
+                fwrite(&temp,2,1,levelfile);
+
+
+                fclose(levelfile);
+            }
         }
     }
 
+    printf("Update level header with updated settings:\n");
 
-        free (filename);
-        free (current_level);
+    strcpy(filename,outputfilename);
+    strcat(filename,"_level.bin");
+    levelfile = fopen(filename,"r+b");   //Create empty levelfile.
+    if (levelfile == 0) error(113);
+
+    fseek(levelfile,0,SEEK_SET);
+
+    actual_width++;
+    actual_height++;
+
+    printf("New level width:  %i maps.\n",actual_width);
+    printf("New level height: %i maps.\n",actual_height);
+    fwrite(&actual_width,2,1,levelfile);
+    fwrite(&actual_height,2,1,levelfile);
 
 
-
-
-
+    free (filename);
+    free (current_level);
+    #undef MAP_POS_IN_RAM(x,y)
+    #undef TILE_POS_IN_MAP(x,y)
+    #undef TILENR(x,y)
 }
 
 
@@ -521,7 +635,7 @@ int main(int argc, char *argv[])
 
         printf("\nConverting layer number %i named: \"%s\".\n",layercount - 1,currentLayerName);
         writeLayerToFile(currentLayerName, tmxname, mapname, offset, width, height);
-        printf(" [SUCCESS!]\n\n");
+        printf("[OVERALL SUCCESS!]\n\n");
     }
 
     exit(0);

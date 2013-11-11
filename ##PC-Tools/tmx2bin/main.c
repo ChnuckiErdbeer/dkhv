@@ -19,6 +19,7 @@ void        error(int id);
 int         findStringInFile(char *filename, char *searchString, int fromHereOn);
 int         stringToInt(char *mystring);
 int         getNumberFromFile(char *filename,int offset);
+int         getNumberFromFileInMemory(char *mempos,int offset);
 int         getStringLen(char *filename,int offset);
 const char *getQStringFromFile(char *filename, int offset);
 void        getMapFilename(char *returnstring,char *outpufilename,char *layername,int x, int y);
@@ -208,6 +209,42 @@ int getNumberFromFile(char *filename,int offset)
     return(stringToInt(buffer));
 }
 
+int getNumberFromFileInMemory(char *mempos,int offset)
+{
+    char buffer[6];
+
+    int i;
+    char a;
+    i = 0;
+
+    a = mempos[offset];
+    offset++;
+
+    if (a == '-')
+    {
+        buffer[i] = a;
+        i++;
+    }
+
+    while(i < 6)
+    {
+        if (isdigit(a))
+        {
+            buffer[i] = a;
+            i++;
+        }
+        else break;
+
+        a = mempos[offset];
+        offset++;
+    }
+
+    buffer[i] = 0;
+
+
+    return(stringToInt(buffer));
+}
+
 int getStringLen(char *filename,int offset){
 
     FILE *file;
@@ -296,6 +333,29 @@ int maxof(int x, int y)
 void writeLayerToFile(char *layerName, char *tmxfilename, char *outputfilename, int offset,int width, int height)
 {
 
+    //Read entire tmx-file into memory:
+
+    FILE *tmxfile;
+
+    tmxfile = fopen(tmxfilename,"rb");
+    if (tmxfile == 0) error(1);
+
+    fseek(tmxfile,0,SEEK_END);
+
+    char *tmx;
+
+    unsigned int sizeoftmxfile = ftell(tmxfile);
+
+    tmx = malloc(sizeoftmxfile);
+
+    fseek(tmxfile,0,SEEK_SET);
+
+    fread(tmx,sizeoftmxfile,1,tmxfile);         //tmx-file is now at position tmx in memory.
+
+    fclose(tmxfile);
+
+
+
     int  i = 0;
     int  j = 0;
 
@@ -320,7 +380,7 @@ void writeLayerToFile(char *layerName, char *tmxfilename, char *outputfilename, 
 
     //Read interleaved map file into planar ram-segment current_level:
 
-    printf("\n Read all submaps from layer:\n");
+    printf("\n Read all submaps from layer: ");
 
     while (j < height)          //Step through the lines in interleaved tmx
     {
@@ -358,7 +418,7 @@ void writeLayerToFile(char *layerName, char *tmxfilename, char *outputfilename, 
 
 
 
-            current_level[TILENR(i,j)] = getNumberFromFile(tmxfilename,offset);
+            current_level[TILENR(i,j)] = getNumberFromFileInMemory(tmx,offset);
 
 
               //Step behind the numbers:
@@ -389,7 +449,7 @@ void writeLayerToFile(char *layerName, char *tmxfilename, char *outputfilename, 
             i++;
         }
 
-        printf("|");
+
         offset++; //Skip the newline char.
 
         j++;
@@ -528,6 +588,7 @@ void writeLayerToFile(char *layerName, char *tmxfilename, char *outputfilename, 
 
     free (filename);
     free (current_level);
+    free (tmx);
     #undef MAP_POS_IN_RAM(x,y)
     #undef TILE_POS_IN_MAP(x,y)
     #undef TILENR(x,y)

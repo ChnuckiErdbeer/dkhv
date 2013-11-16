@@ -58,25 +58,30 @@
 		</Compiler>
 		<Unit filename="##LEVELS/##TILESETS/test.png" />
 		<Unit filename="##LEVELS/##TILESETS/test2.png" />
-		<Unit filename="##LEVELS/gnade/gnade.h" />
 		<Unit filename="##LEVELS/gnade/gnade.png" />
 		<Unit filename="##LEVELS/gnade/gnade.tmx" />
 		<Unit filename="##LEVELS/gnade/gnade_map0.bin" />
 		<Unit filename="##LEVELS/gnade/gnade_pal.bin" />
 		<Unit filename="##LEVELS/gnade/gnade_tiles.bin" />
-		<Unit filename="##LEVELS/test/test.h" />
 		<Unit filename="##LEVELS/test/test.png" />
 		<Unit filename="##LEVELS/test/test.tmx" />
 		<Unit filename="##LEVELS/test/test_map0.bin" />
 		<Unit filename="##LEVELS/test/test_pal.bin" />
 		<Unit filename="##LEVELS/test/test_tiles.bin" />
-		<Unit filename="##LEVELS/tost/tost.h" />
 		<Unit filename="##LEVELS/tost/tost.png" />
 		<Unit filename="##LEVELS/tost/tost.tmx" />
 		<Unit filename="##LEVELS/tost/tost_map0.bin" />
 		<Unit filename="##LEVELS/tost/tost_pal.bin" />
 		<Unit filename="##LEVELS/tost/tost_tiles.bin" />
 		<Unit filename="Makefile" />
+		<Unit filename="include/backup/## levels empty.h" />
+		<Unit filename="include/cam.h" />
+		<Unit filename="include/debug.h" />
+		<Unit filename="include/editor.h" />
+		<Unit filename="include/error.h" />
+		<Unit filename="include/levels.h" />
+		<Unit filename="include/tools.h" />
+		<Unit filename="include/vector.h" />
 		<Unit filename="source/main.c">
 			<Option compilerVar="CC" />
 		</Unit>

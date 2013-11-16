@@ -30,6 +30,10 @@
 
 #define CAM_POS vec_Sum(scrollPos,cenOffset)
 
+
+
+
+
 int main()
 {
     //Set Video mode to MODE_2_2D and activate BG0:
@@ -41,33 +45,57 @@ int main()
 
     VRAM_A_CR = VRAM_ENABLE | VRAM_A_MAIN_BG;
 
-    char *test = "test";
 
-    exit(0);
+    //Load level
 
-   // #define LEVELNAME("
+    u16 tmp_width, tmp_heigth, tmp_noep;
 
+    u16 *tmpptr = &test_level_bin;
 
-    //u16 level_width =
+    tmp_width  = tmpptr[0];
+    tmp_heigth = tmpptr[1];
+    tmp_noep   = tmpptr[1024 + 3];
 
-    //Copy tiles, map and palette to VRAM:
+    u16 *lvl_width                                      = &test_level_bin[0];
+    u16 *lvl_height                                     = &test_level_bin[1];
+    s16 *lvl_map1d                                      = &test_level_bin[2];
 
-    memcpy((void*)BG_TILE_RAM(4), sieben_tiles_bin, sieben_tiles_bin_size);
+    u16 *lvl_footersize                                 = &test_level_bin[2 + 1024];
+    u16 *lvl_numof_entrypoints                          = &test_level_bin[3 + 1024];
 
-	memcpy((void*)(BG_MAP_RAM(1) + TL),sieben_map0_bin, sieben_map0_bin_size);
-	memcpy((void*)(BG_MAP_RAM(1) + TR),sieben_map0_bin, sieben_map0_bin_size);
-	memcpy((void*)(BG_MAP_RAM(1) + BL),sieben_map0_bin, sieben_map0_bin_size);
-	memcpy((void*)(BG_MAP_RAM(1) + BR),sieben_map0_bin, sieben_map0_bin_size);
-
-
-	memcpy((void*)BG_PALETTE, gnade_pal_bin, gnade_pal_bin_size);
-
+    u16 *lvl_entrypoint_list                            = &test_level_bin[4 + 1024];
 
 
 
 
 
     consoleDemoInit();
+
+    while(1);
+
+
+
+
+
+
+
+    //Copy tiles, map and palette to VRAM:
+
+    memcpy((void*)BG_TILE_RAM(4), test_tiles_bin, test_tiles_bin_size);
+
+	memcpy((void*)(BG_MAP_RAM(1) + TL),test_MAP_BG0_0_0_bin, test_MAP_BG0_0_0_bin_size);
+	memcpy((void*)(BG_MAP_RAM(1) + TR),test_MAP_BG0_0_0_bin, test_MAP_BG0_0_0_bin_size);
+	memcpy((void*)(BG_MAP_RAM(1) + BL),test_MAP_BG0_0_0_bin, test_MAP_BG0_0_0_bin_size);
+	memcpy((void*)(BG_MAP_RAM(1) + BR),test_MAP_BG0_0_0_bin, test_MAP_BG0_0_0_bin_size);
+
+
+	memcpy((void*)BG_PALETTE, test_pal_bin, test_pal_bin_size);
+
+
+
+
+
+
 
 
 
@@ -137,12 +165,12 @@ int main()
 
         if (scrollPos.y >> 8 == -92)
         {
-            memcpy((void*)(BG_MAP_RAM(1) + BL),drei_map0_bin, drei_map0_bin_size);
+            memcpy((void*)(BG_MAP_RAM(1) + BL),test_MAP_BG0_0_0_bin, test_MAP_BG0_0_0_bin_size);
         }
 
         if (scrollPos.y == -91)
         {
-            memcpy((void*)(BG_MAP_RAM(1) + BL),vier_map0_bin, vier_map0_bin_size);
+            memcpy((void*)(BG_MAP_RAM(1) + BL),test_MAP_BG0_0_0_bin, test_MAP_BG0_0_0_bin_size);
         }
 
 		REG_BG0HOFS = scrollPos.x;

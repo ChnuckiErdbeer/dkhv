@@ -1,5 +1,37 @@
 #ifndef LEVELS_H
 #define LEVELS_H
-
+                  
+                  
+#include "test_level_bin.h"
+#include "test_MAP_BG0_0_0_bin.h"
+#include "test_MAP_BG0_0_1_bin.h"
+#include "test_MAP_BG0_0_2_bin.h"
+#include "test_MAP_BG0_0_4_bin.h"
+#include "test_MAP_BG0_0_5_bin.h"
+#include "test_MAP_BG0_0_6_bin.h"
+#include "test_MAP_BG0_1_1_bin.h"
+#include "test_MAP_BG0_1_2_bin.h"
+#include "test_MAP_BG0_1_3_bin.h"
+#include "test_MAP_BG0_1_4_bin.h"
+#include "test_MAP_BG0_1_5_bin.h"
+#include "test_MAP_BG0_1_6_bin.h"
+#include "test_MAP_BG0_2_0_bin.h"
+#include "test_MAP_BG0_2_1_bin.h"
+#include "test_MAP_BG0_2_2_bin.h"
+#include "test_MAP_BG0_2_3_bin.h"
+#include "test_MAP_BG0_2_4_bin.h"
+#include "test_MAP_BG0_2_5_bin.h"
+#include "test_MAP_BG0_3_0_bin.h"
+#include "test_MAP_BG0_3_1_bin.h"
+#include "test_MAP_BG0_3_2_bin.h"
+#include "test_MAP_BG0_3_3_bin.h"
+#include "test_MAP_BG0_3_4_bin.h"
+#include "test_MAP_BG0_3_5_bin.h"
+#include "test_MAP_BG0_3_6_bin.h"
+#include "test_MAP_BG0_4_2_bin.h"
+#include "test_MAP_BG0_4_3_bin.h"
+#include "test_MAP_BG0_4_4_bin.h"
+#include "test_pal_bin.h"
+#include "test_tiles_bin.h"
 
 #endif \\LEVELS_H

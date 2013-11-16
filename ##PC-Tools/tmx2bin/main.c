@@ -88,7 +88,6 @@ void error(int id){
 
 int findStringInFile(char *filename, char *searchString, int fromHereOn)
 {
-    int rvalue = -1;
 
     char buffer[strlen(searchString)];
 
@@ -99,8 +98,6 @@ int findStringInFile(char *filename, char *searchString, int fromHereOn)
     fseek(file,0,SEEK_END);
     int filelen = ftell(file);
 
-
-    char a;
     int i;
 
     while((fromHereOn + strlen(searchString)) < filelen)
@@ -123,9 +120,11 @@ int findStringInFile(char *filename, char *searchString, int fromHereOn)
 
     }
 
+    fclose(file);
+
     return (-1);
 
-    fclose(file);
+
 }
 
 int stringToInt(char *mystring)
@@ -291,9 +290,11 @@ const char *getQStringFromFile(char *filename, int offset)
 
     rstring[i] = 0;
 
+    fclose(file);
+
     return(rstring);
 
-    fclose(file);
+
 }
 
 
@@ -316,9 +317,9 @@ void getMapFilename(char *returnstring,char *outputfilename,char *layername,int 
     strcat(returnstring,layername);
     strcat(returnstring,"_");
     strcat(returnstring,xs);
-    strcat(returnstring,",");
+    strcat(returnstring,"_");
     strcat(returnstring,ys);
-    strcat(returnstring,").bin");
+    strcat(returnstring,".bin");
 
     free (xs);
     free (ys);
@@ -385,13 +386,9 @@ void writeLayerToFile(char *layerName, char *tmxfilename, char *outputfilename, 
     while (j < height)          //Step through the lines in interleaved tmx
     {
 
-        int filechange = 0;
 
         while (i < (width))     //Setp through the rows in interleaved tmx
         {
-
-
-            unsigned short tempi;
 
 
             //Now we step throug each tile in a line, and every 32 tiles append them to another corresponding ram segment.
@@ -453,7 +450,6 @@ void writeLayerToFile(char *layerName, char *tmxfilename, char *outputfilename, 
         offset++; //Skip the newline char.
 
         j++;
-        filechange = 0;
         i=0;
     }
 
@@ -498,7 +494,7 @@ void writeLayerToFile(char *layerName, char *tmxfilename, char *outputfilename, 
     int actual_width = 0;
     int actual_height = 0;
 
-
+    short tempraster[width >> 5][height >> 5];
 
     for (i = 0; i < (tiles_in_level);i++)                                   //Step tile per tile through memory-segment.
     {
@@ -510,11 +506,21 @@ void writeLayerToFile(char *layerName, char *tmxfilename, char *outputfilename, 
 
             if (mapisempty == false)                                        //Check if the map wasn't empty.
             {
+
+                //Update actual width/height variables if current position is the biggest as yet in x, y or both:
+
+                actual_width = maxof(actual_width,(((i - 1023) >> 10) % (width >> 5)));
+                actual_height = maxof(actual_height,((i - 1023) / (width << 5)));
+
                 getMapFilename(filename,outputfilename,layerName,((i - 1023) / (width << 5)),(((i - 1023) >> 10) % (width >> 5)));
 
-                if ((i+1) % (width * 32) == 0) printf("[]\n");
-                else printf("[]");
+                //Graphical ASCII output:
 
+                if ((i+1) % (width * 32) == 0) printf("[]\n");      //Print [] as symbol for used map and a newline cause we reached the final x map.
+                else printf("[]");                                  //Print [] as symbol for used map.
+
+
+                //Write map to corresponding map file:
 
                 output = fopen(filename,"wb");
                 if (output == 0) error(112);
@@ -524,55 +530,34 @@ void writeLayerToFile(char *layerName, char *tmxfilename, char *outputfilename, 
                 fclose(output);
 
 
+                //Write mapraster entry to tempraster:
 
-
-                strcpy(filename,outputfilename);
-                strcat(filename,"_level.bin");
-                levelfile = fopen(filename,"ab");
-                if (levelfile == 0) error(114);
-
-                short temp = 0b1000000000000000;
-                fwrite(&temp,2,1,levelfile);
-
-
-                fclose(levelfile);
-
-                actual_width = maxof(actual_width,(((i - 1023) >> 10) % (width >> 5)));
-                actual_height = maxof(actual_height,((i - 1023) / (width << 5)));
+                tempraster[(i - 1023) / (width << 5)][((i - 1023) >> 10) % (width >> 5)] = 0b1000000000000000;
 
                 mapisempty = true;
             }
 
             else
             {
+                //Graphical ASCII output:
 
-                if ((i+1) % (width * 32) == 0) printf("::\n");
-                else printf("::");
-                getMapFilename(filename,outputfilename,layerName,((i - 1023) / (width << 5)),(((i - 1023) >> 10) % (width >> 5)));
-
-
+                if ((i+1) % (width * 32) == 0) printf("::\n");  //Print :: as symbol for unused map and a newline cause we reached the final x map.
+                else printf("::");                              //Print :: as symbol for unused map
 
 
-                strcpy(filename,outputfilename);
-                strcat(filename,"_level.bin");
-                levelfile = fopen(filename,"ab");
 
-                if (levelfile == 0) error(114);
-
-                short temp = 0;
-                fwrite(&temp,2,1,levelfile);
-
-
-                fclose(levelfile);
+                tempraster[(i - 1023) / (width << 5)][((i - 1023) >> 10) % (width >> 5)] = 0;
             }
         }
     }
+
+
 
     printf("Update level header with updated settings:\n");
 
     strcpy(filename,outputfilename);
     strcat(filename,"_level.bin");
-    levelfile = fopen(filename,"r+b");   //Create empty levelfile.
+    levelfile = fopen(filename,"r+b");
     if (levelfile == 0) error(113);
 
     fseek(levelfile,0,SEEK_SET);
@@ -585,13 +570,50 @@ void writeLayerToFile(char *layerName, char *tmxfilename, char *outputfilename, 
     fwrite(&actual_width,2,1,levelfile);
     fwrite(&actual_height,2,1,levelfile);
 
+        //Write optimized mapraster to levelfile:
+
+
+    levelfile = fopen(filename,"ab");
+    if (levelfile == 0) error(114);
+
+    for (j = 0; j < actual_height; j++)
+    {
+        for(i = 0; i < actual_width; i++)
+        {
+            fwrite(&(tempraster[i][j]),2,1,levelfile);
+        }
+    }
+
+
+    //Write yet empty footer to level file:
+
+    fseek(levelfile,0,SEEK_END);
+
+    i = 8;
+
+    fwrite(&i,2,1,levelfile);       //footersize
+
+    i = 0;
+
+    fwrite(&i,2,1,levelfile);       //number of entrypoints
+
+
+
+
+
+
+
+
+    fclose (levelfile);
+
+
 
     free (filename);
     free (current_level);
     free (tmx);
-    #undef MAP_POS_IN_RAM(x,y)
-    #undef TILE_POS_IN_MAP(x,y)
-    #undef TILENR(x,y)
+    #undef MAP_POS_IN_RAM
+    #undef TILE_POS_IN_MAP
+    #undef TILENR
 }
 
 
@@ -619,8 +641,6 @@ int main(int argc, char *argv[])
 
 
     int i,j;
-
-    char temp[16];
 
     int numoflayers = 4;
     int startlayer = 0;

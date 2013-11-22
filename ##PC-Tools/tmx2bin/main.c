@@ -310,6 +310,23 @@ void getMapFilename(char *returnstring,char *outputfilename,char *layername,int 
     itoa(x,xs,10);              //Set xs to current maps x position in the levels map raster.
     itoa(y,ys,10);              //Set ys to current maps y position.
 
+    if (x < 10)
+    {
+        xs[2] = xs[1];
+        xs[1] = xs[0];
+        xs[0] = '0';
+
+    }
+
+        if (y < 10)
+    {
+        ys[2] = ys[1];
+        ys[1] = ys[0];
+        ys[0] = '0';
+
+    }
+
+
     //Set output filename in format: "outputfilename_layername_(x,y).bin"
 
     strcpy(returnstring,outputfilename);
@@ -512,7 +529,7 @@ void writeLayerToFile(char *layerName, char *tmxfilename, char *outputfilename, 
                 actual_width = maxof(actual_width,(((i - 1023) >> 10) % (width >> 5)));
                 actual_height = maxof(actual_height,((i - 1023) / (width << 5)));
 
-                getMapFilename(filename,outputfilename,layerName,((i - 1023) / (width << 5)),(((i - 1023) >> 10) % (width >> 5)));
+                getMapFilename(filename,outputfilename,layerName,(((i - 1023) >> 10) % (width >> 5)),((i - 1023) / (width << 5)));
 
                 //Graphical ASCII output:
 
@@ -640,13 +657,8 @@ int main(int argc, char *argv[])
 
 
 
-    int i,j;
-
     int numoflayers = 4;
     int startlayer = 0;
-
-
-    int layers = 0;
 
 
     // Handling arguments:

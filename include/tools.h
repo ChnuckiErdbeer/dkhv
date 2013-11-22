@@ -21,6 +21,13 @@
 
 s8      grow (s16 *value,s16 speed);            //(st: grow)    Increases absolute value leaving the sign intact.
 int     sgn(int value);                         //(st: sgn)     Returns the sign of value.
+bool    isPos(int value);                       //(st: ispos)   Returns true if value is positive or 0;
+bool    isNeg(int value);                       //(st: isneg)   Returns true if value is negative or 0;
+bool    isEven(s16 value);                      //(st: iseven)  Returns true if value is even.
+bool    isOdd(s16 value);                       //(st: isodd)   Returns true if value is odd.
+s16     maxOf(s16 i, s16 j);                    //(st: maxof)   Retruns the maximum of i and j.
+
+
 
 
 //FUNCTIONS:
@@ -108,9 +115,9 @@ s8 grow (s16 *value,s16 speed)
 //║                                                                                                                             ║
 //║ Return:                                                                                                                     ║
 //║                                                                                                                             ║
-//║     if value is positive: 1                                                                                                 ║
-//║     if value is negative: 0                                                                                                 ║
-//║     if value is 0:        1                                                                                                 ║
+//║     if value is positive:  1                                                                                                ║
+//║     if value is negative: -1                                                                                                ║
+//║     if value is 0:         0                                                                                                ║
 //║                                                                                                                             ║
 //╚═════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╝
 int sgn(int value){
@@ -120,5 +127,130 @@ int sgn(int value){
     else return 1;
 }
 
+//╔══════════╤════════╗
+//║ FUNCTION │ isPos: ╠═══════════════════════════════════════════════════════════════════════════════════════════════════#ispos╗
+//║··········└────────╜                                                                                                         ║
+//║ Returns true if value is positive.                                                                                          ║
+//║ 0 ist interpreted as positive.                                                                                              ║
+//║                                                                                                                             ║
+//║ Parameters:                                                                                                                 ║
+//║                                                                                                                             ║
+//║     int value   (our value)                                                                                                 ║
+//║                                                                                                                             ║
+//║ Return:                                                                                                                     ║
+//║                                                                                                                             ║
+//║     if value is positive:  true                                                                                             ║
+//║     if value is negative:  false                                                                                            ║
+//║     if value is 0:         true                                                                                             ║
+//║                                                                                                                             ║
+//╚═════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+bool isPos(int value){
+
+    if (value  < 0) return  false;
+    else return true;
+}
+//╔══════════╤════════╗
+//║ FUNCTION │ isNeg: ╠═══════════════════════════════════════════════════════════════════════════════════════════════════#isneg╗
+//║··········└────────╜                                                                                                         ║
+//║ Returns true if value is negative.                                                                                          ║
+//║ 0 ist interpreted as negative.                                                                                              ║
+//║                                                                                                                             ║
+//║ Parameters:                                                                                                                 ║
+//║                                                                                                                             ║
+//║     int value   (our value)                                                                                                 ║
+//║                                                                                                                             ║
+//║ Return:                                                                                                                     ║
+//║                                                                                                                             ║
+//║     if value is positive:  false                                                                                            ║
+//║     if value is negative:  true                                                                                             ║
+//║     if value is 0:         true                                                                                             ║
+//║                                                                                                                             ║
+//╚═════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+bool isNeg(int value){
+
+    if (value > 0) return  false;
+    else return true;
+}
+
+//╔══════════╤═════════╗
+//║ FUNCTION │ isEven: ╠═════════════════════════════════════════════════════════════════════════════════════════════════#iseven╗
+//║··········└─────────╜                                                                                                        ║
+//║ Returns true if value is even.                                                                                              ║
+//║                                                                                                                             ║
+//║ Parameters:                                                                                                                 ║
+//║                                                                                                                             ║
+//║     int value   (our value)                                                                                                 ║
+//║                                                                                                                             ║
+//║ Return:                                                                                                                     ║
+//║                                                                                                                             ║
+//║     if value is even:  true                                                                                                 ║
+//║     if value is odd:   false                                                                                                ║
+//║                                                                                                                             ║
+//╚═════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+bool isEven(s16 value)
+{
+    return !(value %2);
+
+}
+
+//╔══════════╤════════╗
+//║ FUNCTION │ isOdd: ╠═══════════════════════════════════════════════════════════════════════════════════════════════════#isodd╗
+//║··········└────────╜                                                                                                         ║
+//║ Returns true if value is odd.                                                                                               ║
+//║                                                                                                                             ║
+//║ Parameters:                                                                                                                 ║
+//║                                                                                                                             ║
+//║     int value   (our value)                                                                                                 ║
+//║                                                                                                                             ║
+//║ Return:                                                                                                                     ║
+//║                                                                                                                             ║
+//║     if value is even:  false                                                                                                ║
+//║     if value is odd:   true                                                                                                 ║
+//║                                                                                                                             ║
+//╚═════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+bool isOdd(s16 value)
+{
+    return (value %2);
+}
+
+//╔══════════╤════════╗
+//║ FUNCTION │ maxOf: ╠═══════════════════════════════════════════════════════════════════════════════════════════════════#maxof╗
+//║··········└────────╜                                                                                                         ║
+//║ Returns the maximum of two values i and j                                                                                   ║
+//║                                                                                                                             ║
+//║ Parameters:                                                                                                                 ║
+//║                                                                                                                             ║
+//║     int value   (our value)                                                                                                 ║
+//║                                                                                                                             ║
+//║ Return:                                                                                                                     ║
+//║                                                                                                                             ║
+//║     maximum of i and j                                                                                                      ║
+//║                                                                                                                             ║
+//╚═════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+s16 maxOf(s16 i, s16 j)
+{
+    if (i > j) return (i);
+    else return (j);
+}
+
+//╔══════════╤════════╗
+//║ FUNCTION │ minOf: ╠═══════════════════════════════════════════════════════════════════════════════════════════════════#minof╗
+//║··········└────────╜                                                                                                         ║
+//║ Returns the minimum of two values i and j                                                                                   ║
+//║                                                                                                                             ║
+//║ Parameters:                                                                                                                 ║
+//║                                                                                                                             ║
+//║     int value   (our value)                                                                                                 ║
+//║                                                                                                                             ║
+//║ Return:                                                                                                                     ║
+//║                                                                                                                             ║
+//║     minimum of i and j                                                                                                      ║
+//║                                                                                                                             ║
+//╚═════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+s16 minOf(s16 i, s16 j)
+{
+    if (i < j) return (i);
+    else return (j);
+}
 
 #endif /* tools_H */

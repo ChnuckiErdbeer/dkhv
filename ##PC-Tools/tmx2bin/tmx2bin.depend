@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1384574164 source:c:\devkitpro\##projects\dsgame\##pc-tools\tmx2bin\main.c
+1384907936 source:c:\devkitpro\##projects\dsgame\##pc-tools\tmx2bin\main.c
 	<stdio.h>
 	<stdlib.h>
 	<string.h>

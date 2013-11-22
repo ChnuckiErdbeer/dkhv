@@ -1,10 +1,27 @@
-// Including libnds’ set of defines
+// Include libnds’ set of defines
 #include <nds.h>
 
-// Icluding standard c headers:
+// Include standard c headers:
 #include <stdio.h>
 
-// Including my own headers:
+// Global defines:
+#define current_gfxset protoC:\devkitPro\##projects\dsgame\##LEVELS\##TILESETS\test.png
+
+#define LAYER0 0x0
+#define LAYER1 0x1
+#define LAYER2 0x1 << 1
+#define LAYEr3 0x1 << 2
+
+
+#define TL 0b00
+#define TR 0b01
+#define BL 0b10
+#define BR 0b11
+
+#define CAM_POS vec_Sum(scrollPos,cenOffset)
+
+
+// Include my own headers:
 #include "vector.h"
 #include "tools.h"
 #include "debug.h"
@@ -16,20 +33,6 @@
 
 #include "levels.h"
 
-#define current_gfxset protoC:\devkitPro\##projects\dsgame\##LEVELS\##TILESETS\test.png
-
-#define LAYER0 0x0
-#define LAYER1 0x1
-#define LAYER2 0x1 << 1
-#define LAYEr3 0x1 << 2
-
-#define TL    0
-#define TR 1024
-#define BL 2048
-#define BR 3072
-
-#define CAM_POS vec_Sum(scrollPos,cenOffset)
-
 
 
 
@@ -39,63 +42,57 @@ int main()
     //Set Video mode to MODE_2_2D and activate BG0:
 
     REG_DISPCNT = MODE_0_2D | DISPLAY_BG0_ACTIVE;
-	REG_BG0CNT = BG_64x64 | BG_COLOR_256 | BG_MAP_BASE(1) | BG_TILE_BASE(4);
+	REG_BG0CNT = BG_64x64 | BG_COLOR_256 | BG_MAP_BASE(0) | BG_TILE_BASE(2);
 
     // Set VRAM bank A for background display:
 
     VRAM_A_CR = VRAM_ENABLE | VRAM_A_MAIN_BG;
 
 
-    //Load level
-
-    u16 tmp_width, tmp_heigth, tmp_noep;
-
-    u16 *tmpptr = &test_level_bin;
-
-    tmp_width  = tmpptr[0];
-    tmp_heigth = tmpptr[1];
-    tmp_noep   = tmpptr[1024 + 3];
-
-    u16 *lvl_width                                      = &test_level_bin[0];
-    u16 *lvl_height                                     = &test_level_bin[1];
-    s16 *lvl_map1d                                      = &test_level_bin[2];
-
-    u16 *lvl_footersize                                 = &test_level_bin[2 + 1024];
-    u16 *lvl_numof_entrypoints                          = &test_level_bin[3 + 1024];
-
-    u16 *lvl_entrypoint_list                            = &test_level_bin[4 + 1024];
 
 
+    //Load level:
+
+    char current_level_name[128] = "test";
+
+
+    level current_level;
+
+    current_level = lvl_loadLevel(current_level_name);
 
 
 
     consoleDemoInit();
 
-    while(1);
+    ;
 
 
 
 
 
 
+    //Copy maps to VRAM:
 
-    //Copy tiles, map and palette to VRAM:
+    map_2x2 quadrants;
 
-    memcpy((void*)BG_TILE_RAM(4), test_tiles_bin, test_tiles_bin_size);
+    quadrants.tl.x = 0;
+    quadrants.tl.y = 0;
 
-	memcpy((void*)(BG_MAP_RAM(1) + TL),test_MAP_BG0_0_0_bin, test_MAP_BG0_0_0_bin_size);
-	memcpy((void*)(BG_MAP_RAM(1) + TR),test_MAP_BG0_0_0_bin, test_MAP_BG0_0_0_bin_size);
-	memcpy((void*)(BG_MAP_RAM(1) + BL),test_MAP_BG0_0_0_bin, test_MAP_BG0_0_0_bin_size);
-	memcpy((void*)(BG_MAP_RAM(1) + BR),test_MAP_BG0_0_0_bin, test_MAP_BG0_0_0_bin_size);
+    quadrants.bl.x = 0;
+    quadrants.bl.y = 1;
 
+    quadrants.tr.x = 1;
+    quadrants.tr.y = 0;
 
-	memcpy((void*)BG_PALETTE, test_pal_bin, test_pal_bin_size);
-
-
-
-
+    quadrants.br.x = 1;
+    quadrants.br.y = 1;
 
 
+
+    memcpy((void*)(BG_MAP_RAM(0) + (1024 * TL)),lvl_get_mappointers(current_level_name,quadrants.tl.x,quadrants.tl.y), 2048);
+    memcpy((void*)(BG_MAP_RAM(0) + (1024 * BL)),lvl_get_mappointers(current_level_name,quadrants.bl.x,quadrants.bl.y), 2048);
+    memcpy((void*)(BG_MAP_RAM(0) + (1024 * TR)),lvl_get_mappointers(current_level_name,quadrants.tr.x,quadrants.tr.y), 2048);
+    memcpy((void*)(BG_MAP_RAM(0) + (1024 * BR)),lvl_get_mappointers(current_level_name,quadrants.br.x,quadrants.br.y), 2048);
 
 
 
@@ -110,30 +107,58 @@ int main()
 
     s16             i;
 
+    u16             current_quadrant = TL;
 
+    vec_2d          previous_scrollPos  = {scrollPos.x, scrollPos.y};
 
 
 //MAIN LOOP:
+
+    //cam_update_quadrants(current_level_name,scrollPos,previous_scrollPos);
+
+//vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+
+
+
+
+
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+
+
+
 
     while(1){
 
         // COMPUTE PLAYER INPUT:
         scanKeys();
-        touchPosition touch;
 
-        int held = keysHeld();
 
-        if (held & KEY_LEFT)    camMagnet.x--;
-        if (held & KEY_RIGHT)   camMagnet.x++;
-        if (held & KEY_UP)      camMagnet.y--;
-        if (held & KEY_DOWN)    camMagnet.y++;
-        if (held & KEY_TOUCH)
-        {
-            touchRead(&touch);
-            camMagnet.x = touch.px;
-            camMagnet.y = touch.py;
+        int down = keysDown();
 
-        }
+        if (down & KEY_LEFT)    camMagnet.x-=256;
+        if (down & KEY_RIGHT)   camMagnet.x+=256;
+        if (down & KEY_UP)      camMagnet.y-=256;
+        if (down & KEY_DOWN)    camMagnet.y+=256;
+
+
+//        int held = keysHeld();
+//
+//        if (held & KEY_LEFT)    camMagnet.x-=1;
+//        if (held & KEY_RIGHT)   camMagnet.x+=1;
+//        if (held & KEY_UP)      camMagnet.y-=1;
+//        if (held & KEY_DOWN)    camMagnet.y+=1;
+
+//        touchPosition touch;
+
+//        if (held & KEY_TOUCH)
+//        {
+//            touchRead(&touch);
+//            camMagnet.x = touch.px;
+//            camMagnet.y = touch.py;
+//
+//        }
 
         //MOVE CAMERA:
 
@@ -160,23 +185,23 @@ int main()
         }
 
         //Write the data to the scroll register.
-        printf("scrollPos.x: %i\n",scrollPos.x>>8);
-        printf("scrollPos.y: %i\n",scrollPos.y>>8);
 
-        if (scrollPos.y >> 8 == -92)
-        {
-            memcpy((void*)(BG_MAP_RAM(1) + BL),test_MAP_BG0_0_0_bin, test_MAP_BG0_0_0_bin_size);
-        }
 
-        if (scrollPos.y == -91)
-        {
-            memcpy((void*)(BG_MAP_RAM(1) + BL),test_MAP_BG0_0_0_bin, test_MAP_BG0_0_0_bin_size);
-        }
+
+        current_quadrant = (isOdd(scrollPos.x >> 8)) | (isOdd(scrollPos.y >> 8) << 1);
+
+        quadrants = cam_update_quadrants(current_level_name,quadrants,scrollPos,previous_scrollPos);
+
 
 		REG_BG0HOFS = scrollPos.x;
         REG_BG0VOFS = scrollPos.y;
 
+        previous_scrollPos = scrollPos;
+
+
+        //deb_waitforbutton("VBLANK");
         swiWaitForVBlank();
+
         consoleClear();
 };
 

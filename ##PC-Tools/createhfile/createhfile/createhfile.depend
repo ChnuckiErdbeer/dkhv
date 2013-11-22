@@ -1,5 +1,13 @@
 # depslib dependency file v1.0
-1383875428 source:c:\devkitpro\##projects\dsgame\##pc-tools\createhfile\createhfile\main.c
+1384837902 source:c:\devkitpro\##projects\dsgame\##pc-tools\createhfile\createhfile\main.c
 	<stdio.h>
 	<stdlib.h>
+	"error.h"
+	"tools.h"
+
+1384734942 c:\devkitpro\##projects\dsgame\##pc-tools\createhfile\createhfile\include\error.h
+
+1384734392 c:\devkitpro\##projects\dsgame\##pc-tools\createhfile\createhfile\include\tools.h
+
+1384720843 c:\devkitpro\##projects\dsgame\##pc-tools\createhfile\createhfile\data\lvl_01_intro.bin
 

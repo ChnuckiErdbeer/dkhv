@@ -1,29 +1,321 @@
-#include "oooooooooooooooo_bin_h"
-#include "sasfkaosf_bin_h"
-#include "sfasfas_bin_h"
-               
+#ifndef LEVELS_H
+#define LEVELS_H
 
-#include "oooooooooooooooo_bin_h"
-#include "sasfkaosf_bin_h"                        
+typedef struct
+{
+	u16		 width;
+	u16		 height;
+	s16		*maplayout;
+	u16		 footersize;
+	u16		 numberOfEntrypoints;
+	s16		*entrypointList;
 
-#include "oooooooooooooooo_bin_h"
-#include "sasfkaosf_bin_h"
-#include "sfasfas_bin_h"                
-H#include "oooooooooooooooo_bin_h"
-#include "sasfkaosf_bin_h"
-#include "sfasfas_bin_h"                
-H#include "oooooooooooooooo_bin_h"
-#include "sasfkaosf_bin_h"
-#include "sfasfas_bin_h"                 
-#include "oooooooooooooooo_bin_h"
-#include "sasfkaosf_bin_h"
-#include "sfasfas_bin_h"                 
-#include "oooooooooooooooo_bin_h"
-#include "sasfkaosf_bin_h"
-#include "sfasfas_bin_h"
-                 
-#include "oooooooooooooooo_bin_h"
-#include "sasfkaosf_bin_h"
-#include "sfasfas_bin_h"
+} level;
 
-#endif \\LEVELS_H
+
+// Include binary files:
+
+
+//Binary files for level "test":
+
+	#include "test_level_bin.h"
+	#include "test_MAP_BG0_00_00_bin.h"
+	#include "test_MAP_BG0_00_01_bin.h"
+	#include "test_MAP_BG0_00_02_bin.h"
+	#include "test_MAP_BG0_00_03_bin.h"
+	#include "test_MAP_BG0_01_01_bin.h"
+	#include "test_MAP_BG0_01_02_bin.h"
+	#include "test_MAP_BG0_01_03_bin.h"
+	#include "test_MAP_BG0_02_10_bin.h"
+	#include "test_MAP_BG0_02_11_bin.h"
+	#include "test_MAP_BG0_02_02_bin.h"
+	#include "test_MAP_BG0_02_03_bin.h"
+	#include "test_MAP_BG0_02_04_bin.h"
+	#include "test_MAP_BG0_02_06_bin.h"
+	#include "test_MAP_BG0_02_07_bin.h"
+	#include "test_MAP_BG0_02_08_bin.h"
+	#include "test_MAP_BG0_02_09_bin.h"
+	#include "test_MAP_BG0_03_01_bin.h"
+	#include "test_MAP_BG0_03_10_bin.h"
+	#include "test_MAP_BG0_03_11_bin.h"
+	#include "test_MAP_BG0_03_02_bin.h"
+	#include "test_MAP_BG0_03_03_bin.h"
+	#include "test_MAP_BG0_03_04_bin.h"
+	#include "test_MAP_BG0_03_06_bin.h"
+	#include "test_MAP_BG0_03_07_bin.h"
+	#include "test_MAP_BG0_03_09_bin.h"
+	#include "test_MAP_BG0_04_01_bin.h"
+	#include "test_MAP_BG0_04_02_bin.h"
+	#include "test_MAP_BG0_04_06_bin.h"
+	#include "test_MAP_BG0_04_07_bin.h"
+	#include "test_MAP_BG0_05_01_bin.h"
+	#include "test_MAP_BG0_05_02_bin.h"
+	#include "test_MAP_BG0_05_03_bin.h"
+	#include "test_MAP_BG0_05_04_bin.h"
+	#include "test_MAP_BG0_05_05_bin.h"
+	#include "test_MAP_BG0_05_06_bin.h"
+	#include "test_MAP_BG0_06_02_bin.h"
+	#include "test_MAP_BG0_06_03_bin.h"
+	#include "test_MAP_BG0_06_04_bin.h"
+	#include "test_MAP_BG0_06_05_bin.h"
+	#include "test_MAP_BG0_06_06_bin.h"
+	#include "test_pal_bin.h"
+	#include "test_tiles_bin.h"
+
+
+//Functions:
+
+u16 *lvl_get_test_mappointers(char *level,u16 x, u16 y)
+{
+	
+
+	//If blocks for level "test":
+
+	if ((strcmp(level,"test") == 0) && (x == 0) && (y == 0))
+	{
+		return (u16*)test_MAP_BG0_00_00_bin;
+	}
+
+	if ((strcmp(level,"test") == 0) && (x == 0) && (y == 1))
+	{
+		return (u16*)test_MAP_BG0_00_01_bin;
+	}
+
+	if ((strcmp(level,"test") == 0) && (x == 0) && (y == 2))
+	{
+		return (u16*)test_MAP_BG0_00_02_bin;
+	}
+
+	if ((strcmp(level,"test") == 0) && (x == 0) && (y == 3))
+	{
+		return (u16*)test_MAP_BG0_00_03_bin;
+	}
+
+	if ((strcmp(level,"test") == 0) && (x == 1) && (y == 1))
+	{
+		return (u16*)test_MAP_BG0_01_01_bin;
+	}
+
+	if ((strcmp(level,"test") == 0) && (x == 1) && (y == 2))
+	{
+		return (u16*)test_MAP_BG0_01_02_bin;
+	}
+
+	if ((strcmp(level,"test") == 0) && (x == 1) && (y == 3))
+	{
+		return (u16*)test_MAP_BG0_01_03_bin;
+	}
+
+	if ((strcmp(level,"test") == 0) && (x == 2) && (y == 10))
+	{
+		return (u16*)test_MAP_BG0_02_10_bin;
+	}
+
+	if ((strcmp(level,"test") == 0) && (x == 2) && (y == 11))
+	{
+		return (u16*)test_MAP_BG0_02_11_bin;
+	}
+
+	if ((strcmp(level,"test") == 0) && (x == 2) && (y == 2))
+	{
+		return (u16*)test_MAP_BG0_02_02_bin;
+	}
+
+	if ((strcmp(level,"test") == 0) && (x == 2) && (y == 3))
+	{
+		return (u16*)test_MAP_BG0_02_03_bin;
+	}
+
+	if ((strcmp(level,"test") == 0) && (x == 2) && (y == 4))
+	{
+		return (u16*)test_MAP_BG0_02_04_bin;
+	}
+
+	if ((strcmp(level,"test") == 0) && (x == 2) && (y == 6))
+	{
+		return (u16*)test_MAP_BG0_02_06_bin;
+	}
+
+	if ((strcmp(level,"test") == 0) && (x == 2) && (y == 7))
+	{
+		return (u16*)test_MAP_BG0_02_07_bin;
+	}
+
+	if ((strcmp(level,"test") == 0) && (x == 2) && (y == 8))
+	{
+		return (u16*)test_MAP_BG0_02_08_bin;
+	}
+
+	if ((strcmp(level,"test") == 0) && (x == 2) && (y == 9))
+	{
+		return (u16*)test_MAP_BG0_02_09_bin;
+	}
+
+	if ((strcmp(level,"test") == 0) && (x == 3) && (y == 1))
+	{
+		return (u16*)test_MAP_BG0_03_01_bin;
+	}
+
+	if ((strcmp(level,"test") == 0) && (x == 3) && (y == 10))
+	{
+		return (u16*)test_MAP_BG0_03_10_bin;
+	}
+
+	if ((strcmp(level,"test") == 0) && (x == 3) && (y == 11))
+	{
+		return (u16*)test_MAP_BG0_03_11_bin;
+	}
+
+	if ((strcmp(level,"test") == 0) && (x == 3) && (y == 2))
+	{
+		return (u16*)test_MAP_BG0_03_02_bin;
+	}
+
+	if ((strcmp(level,"test") == 0) && (x == 3) && (y == 3))
+	{
+		return (u16*)test_MAP_BG0_03_03_bin;
+	}
+
+	if ((strcmp(level,"test") == 0) && (x == 3) && (y == 4))
+	{
+		return (u16*)test_MAP_BG0_03_04_bin;
+	}
+
+	if ((strcmp(level,"test") == 0) && (x == 3) && (y == 6))
+	{
+		return (u16*)test_MAP_BG0_03_06_bin;
+	}
+
+	if ((strcmp(level,"test") == 0) && (x == 3) && (y == 7))
+	{
+		return (u16*)test_MAP_BG0_03_07_bin;
+	}
+
+	if ((strcmp(level,"test") == 0) && (x == 3) && (y == 9))
+	{
+		return (u16*)test_MAP_BG0_03_09_bin;
+	}
+
+	if ((strcmp(level,"test") == 0) && (x == 4) && (y == 1))
+	{
+		return (u16*)test_MAP_BG0_04_01_bin;
+	}
+
+	if ((strcmp(level,"test") == 0) && (x == 4) && (y == 2))
+	{
+		return (u16*)test_MAP_BG0_04_02_bin;
+	}
+
+	if ((strcmp(level,"test") == 0) && (x == 4) && (y == 6))
+	{
+		return (u16*)test_MAP_BG0_04_06_bin;
+	}
+
+	if ((strcmp(level,"test") == 0) && (x == 4) && (y == 7))
+	{
+		return (u16*)test_MAP_BG0_04_07_bin;
+	}
+
+	if ((strcmp(level,"test") == 0) && (x == 5) && (y == 1))
+	{
+		return (u16*)test_MAP_BG0_05_01_bin;
+	}
+
+	if ((strcmp(level,"test") == 0) && (x == 5) && (y == 2))
+	{
+		return (u16*)test_MAP_BG0_05_02_bin;
+	}
+
+	if ((strcmp(level,"test") == 0) && (x == 5) && (y == 3))
+	{
+		return (u16*)test_MAP_BG0_05_03_bin;
+	}
+
+	if ((strcmp(level,"test") == 0) && (x == 5) && (y == 4))
+	{
+		return (u16*)test_MAP_BG0_05_04_bin;
+	}
+
+	if ((strcmp(level,"test") == 0) && (x == 5) && (y == 5))
+	{
+		return (u16*)test_MAP_BG0_05_05_bin;
+	}
+
+	if ((strcmp(level,"test") == 0) && (x == 5) && (y == 6))
+	{
+		return (u16*)test_MAP_BG0_05_06_bin;
+	}
+
+	if ((strcmp(level,"test") == 0) && (x == 6) && (y == 2))
+	{
+		return (u16*)test_MAP_BG0_06_02_bin;
+	}
+
+	if ((strcmp(level,"test") == 0) && (x == 6) && (y == 3))
+	{
+		return (u16*)test_MAP_BG0_06_03_bin;
+	}
+
+	if ((strcmp(level,"test") == 0) && (x == 6) && (y == 4))
+	{
+		return (u16*)test_MAP_BG0_06_04_bin;
+	}
+
+	if ((strcmp(level,"test") == 0) && (x == 6) && (y == 5))
+	{
+		return (u16*)test_MAP_BG0_06_05_bin;
+	}
+
+	if ((strcmp(level,"test") == 0) && (x == 6) && (y == 6))
+	{
+		return (u16*)test_MAP_BG0_06_06_bin;
+	}
+
+
+	//Level not loaded:
+
+	if (strcmp(level,"test") == 0) return (u16*)test_MAP_BG0_00_00_bin;
+
+}//End of function lvl_get_test_mappointers
+
+
+level lvl_loadLevel(char *levelname)
+{
+	level rstruct;
+
+		if (strcmp(levelname,"test") == 0)
+	{
+		rstruct.width                =  test_level_bin[0 * sizeof(u16)];
+		rstruct.height               =  test_level_bin[1 * sizeof(u16)];
+		rstruct.maplayout            = &test_level_bin[2 * sizeof(u16)];
+		rstruct.footersize           =  test_level_bin[(2 + ((rstruct.width) * (rstruct.height))) * sizeof(u16)];
+		rstruct.numberOfEntrypoints  =  test_level_bin[(3 + ((rstruct.width) * (rstruct.height))) * sizeof(u16)];
+		rstruct.entrypointList       = &test_level_bin[(4 + ((rstruct.width) * (rstruct.height))) * sizeof(u16)];
+
+
+	//Load level's tileset and palette:
+
+	memcpy((void*)BG_TILE_RAM(2), test_tiles_bin, test_tiles_bin_size);
+	memcpy((void*)BG_PALETTE, test_pal_bin, test_pal_bin_size);
+
+		return (rstruct);
+	}
+
+	//Level not loaded:
+
+	else
+
+	{
+		rstruct.width                =  0;
+		rstruct.height               =  0;
+		rstruct.maplayout            =  0;
+		rstruct.footersize           =  0;
+		rstruct.numberOfEntrypoints  =  0;
+		rstruct.entrypointList       =  0;
+
+		return (rstruct);
+	}
+
+}//End of function lvl_loadLevel
+
+#endif //LEVELS_H

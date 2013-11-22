@@ -12,51 +12,71 @@
 
 typedef s16 vec;
 
-typedef struct{
+typedef struct
+{
     vec x;
     vec y;
 }vec_2d;
 
-typedef struct{
+typedef struct
+{
     vec x;
     vec y;
     vec z;
 }vec_3d;
 
+typedef struct
+{
+    vec_2d tl_corner;
+    vec_2d br_corner;
 
-//FUNCTION PROTOTYPES:
-
-vec_2d  vec_3to2d(vec_3d a);                        //(st: 3to2d)   3d to 2d vector conversion.
-vec_3d  vec_2to3d(vec_2d a);                        //(st: 2to3d)   2d to 3d vector conversion.
-
-vec_2d  vec_Sum    (vec_2d a, vec_2d v);            //(st: add)     Vector addition.
-vec_3d  vec_Sum3d  (vec_3d a, vec_3d v);
-vec_3d  vec_Sum2d3d(vec_2d a, vec_3d v);
-vec_3d  vec_Sum3d2d(vec_3d a, vec_2d v);
-
-vec_2d  vec_Dif    (vec_2d a, vec_2d b);            //(st: dif)     Vector substraction.
-vec_3d  vec_Dif3d  (vec_3d a, vec_3d b);
-vec_3d  vec_Dif2d3d(vec_2d a, vec_3d b);
-vec_3d  vec_Dif3d2d(vec_3d a, vec_2d b);
+}vec_rect;
 
 
-vec_2d  vec_Smul  (s16 l,vec_2d a);                 //(st: smul)    Vector scalar-multiplication.
-vec_3d  vec_Smul3d(s16 l,vec_3d a);
 
-bool    vec_Eq    (vec_2d a, vec_2d b);             //(st: equal)   Checks wheter two vectors are equal.
-bool    vec_Eq3d  (vec_3d a, vec_3d b);
-bool    vec_Eq2d3d(vec_2d a, vec_3d b);
-bool    vec_Eq3d2d(vec_3d a, vec_2d b);
+//FUNCTION PROTOTYPES:                                                                                  #proto
 
-bool    vec_Null  (vec_2d a);                       //(st: null)    Checks if a vector is a null vector.
-bool    vec_Null3d(vec_3d a);
+vec_2d      vec_3to2d(vec_3d a);                        //(st: 3to2d)       3d to 2d vector conversion.
+vec_3d      vec_2to3d(vec_2d a);                        //(st: 2to3d)       2d to 3d vector conversion.
 
-u16     vec_Len  (vec_2d a);                        //(st: len)     Returns the length of a vector using the manhattan norm.
-u16     vec_Len3d(vec_3d a);
+vec_2d      vec_Sum    (vec_2d a, vec_2d v);            //(st: add)         Vector addition.
+vec_3d      vec_Sum3d  (vec_3d a, vec_3d v);
+vec_3d      vec_Sum2d3d(vec_2d a, vec_3d v);
+vec_3d      vec_Sum3d2d(vec_3d a, vec_2d v);
 
-vec_2d  bresSeg(vec_2d origin, vec_2d target);      //(st: bresseg) Returns the 2d vector equivalent of a Bresenham-line segment.
+vec_2d      vec_Dif    (vec_2d a, vec_2d b);            //(st: dif)         Vector substraction.
+vec_3d      vec_Dif3d  (vec_3d a, vec_3d b);
+vec_3d      vec_Dif2d3d(vec_2d a, vec_3d b);
+vec_3d      vec_Dif3d2d(vec_3d a, vec_2d b);
 
-vec_2d  vec_taxi(vec_2d *offset, vec_2d direction); //(st: taxi)    Moves a point one step into an direction.
+
+vec_2d      vec_Smul  (s16 l,vec_2d a);                 //(st: smul)        Vector scalar-multiplication.
+vec_3d      vec_Smul3d(s16 l,vec_3d a);
+
+bool        vec_Eq    (vec_2d a, vec_2d b);             //(st: equal)       Checks wheter two vectors are equal.
+bool        vec_Eq3d  (vec_3d a, vec_3d b);
+bool        vec_Eq2d3d(vec_2d a, vec_3d b);
+bool        vec_Eq3d2d(vec_3d a, vec_2d b);
+
+bool        vec_Null  (vec_2d a);                       //(st: null)        Checks if a vector is a null vector.
+bool        vec_Null3d(vec_3d a);
+
+u16         vec_Len  (vec_2d a);                        //(st: len)         Returns the length of a vector using the manhattan norm.
+u16         vec_Len3d(vec_3d a);
+
+u16         vec_Len_max(vec_2d a);                      //(st: len_max      Returns the length of a xector using the maximum norm.
+
+vec_2d      bresSeg(vec_2d origin, vec_2d target);      //(st: bresseg)     Returns the 2d vector equivalent of a Bresenham-line segment.
+
+vec_2d      vec_taxi(vec_2d *offset, vec_2d direction); //(st: taxi)        Moves a point one step into an direction.
+
+vec_rect    vec_rect_std(vec_rect A);                   //(st:rect_std)     Redefines a rectangle by it's top left and bottom right corners.
+
+bool        vec_isInRect(vec_2d point,vec_rect rect);   //(st: isinrect)    Checks whether a point lies inside a rectangle or not.
+
+vec_rect    vec_rectIS(vec_rect A, vec_rect B);         //(st: rectis)      Returns the rectangle representing the intersection of A and B.
+
+bool        vec_rect_isNull(vec_rect A);                //(st: rect_isNull) Evaluates if rectangle "A" has dimensioning.
 
 //FUNCTIONS:
 
@@ -331,6 +351,27 @@ u16 vec_Len3d(vec_3d a)
    return(abs(a.x) + abs(a.y) + abs(a.z)); //Manhattan norm.
 }
 
+//╔══════════╤══════════════╗
+//║ FUNCTION │ vec_Len_max: ╠═══════════════════════════════════════════════════════════════════════════════════════════#len_max╗
+//║··········└──────────────╜                                                                                                   ║
+//║                                                                                                                             ║
+//║  Returns the length of vector a using the maximum norm. (||a|| = max(|a.1|,|a.2|, ... , |a.n|)                              ║
+//║                                                                                                                             ║
+//║  Arguments:                                                                                                                 ║
+//║                                                                                                                             ║
+//║    vec_2d or vec_3d     a (the vector)                                                                                      ║
+//║                                                                                                                             ║
+//║  Return:                                                                                                                    ║
+//║                                                                                                                             ║
+//║     Returns ||a||                                                                                                           ║
+//║                                                                                                                             ║
+//╚═════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+u16 vec_Len_max  (vec_2d a)
+{
+   return maxOf(abs(a.x),abs(a.y)); //Maximum norm.
+}
+
+
 //╔══════════╤══════════╗
 //║ FUNCTION │ bresSeg: ╠═══════════════════════════════════════════════════════════════════════════════════════════════#bresseg╗
 //║··········└──────────╜                                                                                                       ║
@@ -481,6 +522,129 @@ vec_2d vec_taxi(vec_2d *offset, vec_2d direction)
     }
 
 return(direction);
+}
+
+//╔══════════╤═══════════════╗
+//║ FUNCTION │ vec_rect_std: ╠═════════════════════════════════════════════════════════════════════════════════════#vec_rect_std╗
+//║··········└───────────────╜                                                                                                  ║
+//║                                                                                                                             ║
+//║  Redefines a rectangle by its top left and bottom right corners.                                                            ║
+//║                                                                                                                             ║
+//║  Arguments:                                                                                                                 ║
+//║                                                                                                                             ║
+//║    vec_rect   A  (a rectangle defined by two points)                                                                        ║
+//║                                                                                                                             ║
+//║  Return:                                                                                                                    ║
+//║                                                                                                                             ║
+//║     The same rectangle but defined by its top left and bottom right corners.                                                ║
+//║                                                                                                                             ║
+//╚═════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+vec_rect vec_rect_std(vec_rect A)
+{
+    vec_rect B;
+
+    B.tl_corner.x = minOf(A.tl_corner.x, A.br_corner.x);
+    B.tl_corner.y = minOf(A.tl_corner.y, A.br_corner.y);
+    B.br_corner.x = maxOf(A.tl_corner.x, A.br_corner.x);
+    B.br_corner.y = maxOf(A.tl_corner.y, A.br_corner.y);
+
+    return(B);
+}
+
+//╔══════════╤═══════════════╗
+//║ FUNCTION │ vec_isInRect: ╠═════════════════════════════════════════════════════════════════════════════════════════#isInRect╗
+//║··········└───────═───────╜                                                                                                  ║
+//║                                                                                                                             ║
+//║  Returns true if coordinates of "point" lie inside rectangle "rect".                                                        ║
+//║                                                                                                                             ║
+//║  Arguments:                                                                                                                 ║
+//║                                                                                                                             ║
+//║    vec_2d     point (the point)                                                                                             ║
+//║    vec_rect   rect  (the rectangle)                                                                                         ║
+//║                                                                                                                             ║
+//║  Return:                                                                                                                    ║
+//║                                                                                                                             ║
+//║     Returns true if point lies inside rect.                                                                                 ║
+//║                                                                                                                             ║
+//╚═════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+bool vec_isInRect(vec_2d point,vec_rect rect)
+{
+    if
+    (
+        (point.x >= rect.tl_corner.x)
+     && (point.x <= rect.br_corner.x)
+     && (point.y >= rect.tl_corner.y)
+     && (point.y <= rect.br_corner.y)
+
+    ) return (true);
+    else return (false);
+}
+
+//╔══════════╤═════════════╗
+//║ FUNCTION │ vec_rectIS: ╠═════════════════════════════════════════════════════════════════════════════════════════════#rectis╗
+//║··········└─────────────╜                                                                                                    ║
+//║                                                                                                                             ║
+//║  Returns the rectangle C resulting in intersecting rectangles A and B.                                                      ║
+//║                                                                                                                             ║
+//║  Arguments:                                                                                                                 ║
+//║                                                                                                                             ║
+//║    vec_rect   A                                                                                                             ║
+//║    vec_rect   B                                                                                                             ║
+//║                                                                                                                             ║
+//║  Return:                                                                                                                    ║
+//║                                                                                                                             ║
+//║     Returns rectangle C wich is the overlap of A and B.                                                                     ║
+//║                                                                                                                             ║
+//╚═════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+vec_rect vec_rectIS(vec_rect A, vec_rect B)
+{
+   //standardize both vectors:
+   vec_rect_std(A);
+   vec_rect_std(B);
+
+   vec_rect C;
+
+   C.tl_corner.x = maxOf(A.tl_corner.x,B.tl_corner.x);
+   C.tl_corner.y = maxOf(A.tl_corner.y,B.tl_corner.y);
+   C.br_corner.x = minOf(A.br_corner.x,B.br_corner.x);
+   C.br_corner.y = minOf(A.br_corner.y,B.br_corner.y);
+
+   //If rectangles don't intersect return a "null-rectangle".
+
+   if((C.tl_corner.x >= C.br_corner.x) || (C.tl_corner.y >= C.br_corner.y))
+   {
+       C.tl_corner.x = 0;
+       C.tl_corner.y = 0;
+       C.br_corner.x = 0;
+       C.br_corner.y = 0;
+
+       return (C);
+
+   }
+
+   return (C);
+
+}
+
+//╔══════════╤═════════════════╗
+//║ FUNCTION │ vec_rectIsNull: ╠═════════════════════════════════════════════════════════════════════════════════════#rectisnull╗
+//║··········└─────────────────╜                                                                                                ║
+//║                                                                                                                             ║
+//║  Evaluates if rectangle "A" has no dimensioning.                                                                            ║
+//║                                                                                                                             ║
+//║  Arguments:                                                                                                                 ║
+//║                                                                                                                             ║
+//║    vec_rect   A                                                                                                             ║
+//║                                                                                                                             ║
+//║  Return:                                                                                                                    ║
+//║                                                                                                                             ║
+//║     Returns true if top left and bottom right corners of "A" are equal. False if not.                                       ║
+//║                                                                                                                             ║
+//╚═════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+bool vec_rect_isNull(vec_rect A)
+{
+    if ((A.tl_corner.x == A.br_corner.x) && (A.tl_corner.y == A.br_corner.y)) return (true);
+    else return (false);
 }
 
 #endif /* vector_H */
